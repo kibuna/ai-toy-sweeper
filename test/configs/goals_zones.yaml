@@ -1,0 +1,5 @@
+# 評価専用: ゴールを config/sim.yaml の goal_zones（四隅、0.2 m 四方）から選ぶ。学習は乱数のゴール（task.yaml goal_mode: random）。
+# 色分けのデモは四隅のゴールを使うので、その条件での成功率を見る（2026-10-18）
+task:
+  sampling:
+    goal_mode: zones

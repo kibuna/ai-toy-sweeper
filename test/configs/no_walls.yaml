@@ -1,0 +1,4 @@
+# 壁なし（v19nw）。ロボットか物体の中心が作業領域の外に出たら失敗
+sim:
+  walls:
+    enabled: false

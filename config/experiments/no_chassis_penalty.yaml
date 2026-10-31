@@ -1,0 +1,4 @@
+# 車体の接触の減点を 0 にする（v19）。Gazebo のバックエンドは車体の接触を数えないので、Gazebo で評価するときに重ねる
+task:
+  reward:
+    chassis_contact_penalty: 0.0

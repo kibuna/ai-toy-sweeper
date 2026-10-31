@@ -1,0 +1,28 @@
+{
+  "git_commit": "bfcea5b0a0d15186891fa989b00d449f3e069360-dirty",
+  "train_seed": 0,
+  "n_envs": 1024,
+  "env_backend": "native",
+  "total_timesteps": 50000000,
+  "resume": null,
+  "overrides": [
+    "config/experiments/set_encoder.yaml",
+    "config/experiments/chassis03.yaml",
+    "config/experiments/imperfect.yaml",
+    "config/experiments/gpu_ppo.yaml",
+    "config/experiments/cleanup.yaml",
+    "config/experiments/corner_edge.yaml",
+    "config/experiments/cleanup_guidance.yaml",
+    "config/experiments/multi_toy_car.yaml",
+    "config/experiments/efficient.yaml",
+    "config/experiments/free_area.yaml",
+    "config/experiments/robot_8hz.yaml",
+    "config/experiments/hw_1022.yaml",
+    "config/experiments/motor_lag.yaml",
+    "config/experiments/steps_x2.yaml"
+  ],
+  "bc_demos": null,
+  "init": "checkpoints/ppo_v32_s0_x2/final.zip",
+  "start_stage": 9,
+  "derived": "ppo_v36_s0/final.zip の重みをそのまま、歩数の上限だけ config/experiments/steps_x2.yaml（600 + 300 / 個）にして使う（学習はしていない。2026-10-31。ppo_v32_s0_x2 と同じ作り方で、2D の評価（上限 2 倍）と同じ条件にする）"
+}

@@ -1,0 +1,9 @@
+# 評価専用（v30）: 作業領域を実機の大きさに固定する（カメラの校正、2026-10-22: 74.8 × 82.6 cm）。free_area.yaml の後に重ねる（単独でも読めるよう、壁なしも
+# free_area.yaml と同じに書く）
+sim:
+  walls:
+    enabled: false
+    out_of_area_margin_m: 0.10
+task:
+  sampling:
+    work_area_size_range_m: [[0.748, 0.748], [0.826, 0.826]]

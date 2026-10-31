@@ -1,0 +1,76 @@
+# ROS 2 Jazzy + Gazebo Harmonic 環境（RoboStack, sudo 不要）
+#
+# 理由: 開発機（WSL2 Ubuntu 24.04）に sudo 権限がなく apt で ROS を入れられないため、
+# conda-forge 上の RoboStack でユーザー領域に導入する。
+# 版の組み合わせは ROS 2 Jazzy + Gazebo Harmonic（gz-sim8）。
+# 本番（実機デモ時）も同じ PC で動かすので、この条件は本番でも成り立つ。
+# apt 版との挙動差は未検証（docs: doc/setup.md）。
+#
+# Python の学習コード（gymnasium / SB3）は uv 管理（pyproject.toml）。
+# Gazebo 連携コードはこの環境の Python から src/ を editable で読む。
+
+[workspace]
+name = "toy-sweeper-ros"
+channels = ["robostack-jazzy", "conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.12.*"
+ros-jazzy-ros-base = "*"
+ros-jazzy-ros-gz = "*"
+ros-jazzy-xacro = "*"
+ros-jazzy-robot-state-publisher = "*"
+ros-jazzy-geometry-msgs = "*"
+ros-jazzy-nav-msgs = "*"
+colcon-common-extensions = "*"
+compilers = "*"
+cmake = "*"
+pkg-config = "*"
+make = "*"
+ninja = "*"
+setuptools = "*"
+numpy = "<2.3"
+pyyaml = "*"
+pytest = "*"
+
+[pypi-dependencies]
+# 学習コード（src/toy_sweeper）を Gazebo 連携から使うため。版は uv.lock と揃える（2026-10-16 時点）
+toy-sweeper = { path = ".", editable = true }
+# 2026-10-18、pyproject.toml が学習 PC（Linux）で torch の CUDA 版（cu130）と学習環境の Rust 版（native/）を使うように
+# なったので、ここも同じにする（取得元が違うと解決できない）
+torch = { version = "==2.14.1", index = "https://download.pytorch.org/whl/cu130" }
+toy-sweeper-native = { path = "native" }
+
+[activation]
+scripts = ["scripts/pixi_activate.sh"]
+
+# ---- VLM（Qwen3-VL）用の環境。ROS を含まない。 `pixi run -e vlm python ...` で使う ----
+# 学習（uv、torch CPU）とは別にして、GPU 版の torch を入れる。版は uv.lock の torch 2.14.1 に揃え、
+# RTX 3090（ドライバ CUDA 13.3）で cu130 の wheel を使う。
+# 2026-10-16: torch 2.9.1 + cu128 では、Qwen3-VL の画像エンコーダーの bf16 Conv3d が遅い汎用実装
+# （slow_conv_dilated3d）に回り、画像 1 枚の prefill に 12 秒かかった
+[feature.vlm.dependencies]
+python = "3.12.*"
+numpy = "<2.3"
+
+[feature.vlm.pypi-dependencies]
+torch = { version = "==2.14.1", index = "https://download.pytorch.org/whl/cu130" }
+torchvision = { version = "*", index = "https://download.pytorch.org/whl/cu130" }
+transformers = ">=4.57"
+accelerate = ">=1.0"
+pillow = "*"
+# toy_sweeper 本体は editable で入れられない（pyproject.toml の torch CPU 指定と衝突する）ので、
+# 下の PYTHONPATH で src/ を読む。そのため本体の依存のうち VLM の処理で import するものだけをここに書く
+gymnasium = ">=1.0"
+pymunk = ">=6.8"
+pyyaml = ">=6.0"
+opencv-python-headless = ">=4.10"
+# 音声入力のサーバー（scripts/voice_server.py）。Whisper は transformers で動かす
+fastapi = ">=0.115"
+uvicorn = ">=0.30"
+
+[feature.vlm.activation.env]
+PYTHONPATH = "$PIXI_PROJECT_ROOT/src"
+
+[environments]
+vlm = { features = ["vlm"], no-default-feature = true }

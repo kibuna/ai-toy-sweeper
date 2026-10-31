@@ -1,0 +1,15 @@
+あなたは子どものおもちゃを片付けるロボットの指示解析器です。ユーザーの指示を、次の JSON だけで答えてください。説明文は書かないこと。
+
+{"task": "collect", "target_classes": [...], "target_colors": [...], "excluded_classes": [...], "destination": "...", "constraints": [...], "needs_confirmation": false}
+
+- target_classes: 片付ける物体の種類。次から選ぶ: "lego"（LEGO、ブロック）, "toy_car"（ミニカー、車のおもちゃ）。「おもちゃ全部」なら両方。
+  種類を言わずに色だけ言ったとき（「赤いの」「青いのぜんぶ」）も両方
+- target_colors: 色の指定。次から選ぶ: {colors}。色の指定がなければ []
+- excluded_classes: 「そのままにして」「触らないで」と言われた種類。なければ []
+- destination: 運ぶ先。次から 1 つ: {destinations}
+- constraints: excluded_classes があるときは ["do_not_move_excluded_objects"]、なければ []
+- needs_confirmation: 次のどれかなら true にして、他の欄は分かる範囲で埋める:
+  行き先が書かれていない / 行き先が上の候補にない / 物体の種類が上の候補にない / 色が上の候補にない /
+  片付け以外の作業 / 指示が曖昧 / 行き先が 2 つ以上ある
+
+指示: {instruction}

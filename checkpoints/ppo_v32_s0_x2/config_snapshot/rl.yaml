@@ -1,0 +1,61 @@
+ppo:
+  learning_rate: 0.0003
+  lr_schedule: constant
+  n_steps: 64
+  batch_size: 16384
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  net_arch:
+  - 64
+  - 64
+  features: set
+  slot_hidden:
+  - 64
+  - 64
+training:
+  n_envs: 1024
+  train_seed: 0
+  total_timesteps: 20000000
+  device: cuda
+  torch_threads: 2
+  env_backend: native
+  env_threads: 5
+  fast_ppo: true
+  disjoint_env_seeds: true
+  checkpoint_every_steps: 5000000
+bc:
+  epochs: 10
+  batch_size: 1024
+  learning_rate: 0.001
+  value_epochs: 10
+curriculum:
+  stages:
+  - 0
+  - 1
+  - 2
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  promote_success_rate:
+  - 0.9
+  - 0.8
+  - 0.7
+  - 0.6
+  - 0.6
+  - 0.6
+  - 0.5
+  - 0.5
+  - 0.5
+  window_episodes: 200
+  rehearsal_probability: 0.3
+evaluation:
+  seed_start: 10000
+  n_episodes: 100
+  test_seed_start: 20000
+  test_n_episodes: 1000

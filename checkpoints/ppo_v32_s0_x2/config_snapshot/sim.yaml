@@ -1,0 +1,199 @@
+work_area:
+  size_m:
+  - 0.8
+  - 0.8
+walls:
+  enabled: false
+  height_m: 0.03
+  thickness_m: 0.01
+  friction: 0.5
+  out_of_area_margin_m: 0.1
+goal_zones:
+  top_left:
+    center_m:
+    - -0.3
+    - 0.3
+    size_m:
+    - 0.2
+    - 0.2
+  top_right:
+    center_m:
+    - 0.3
+    - 0.3
+    size_m:
+    - 0.2
+    - 0.2
+  bottom_left:
+    center_m:
+    - -0.3
+    - -0.3
+    size_m:
+    - 0.2
+    - 0.2
+  bottom_right:
+    center_m:
+    - 0.3
+    - -0.3
+    size_m:
+    - 0.2
+    - 0.2
+  top:
+    center_m:
+    - 0.0
+    - 0.3
+    size_m:
+    - 0.2
+    - 0.2
+  bottom:
+    center_m:
+    - 0.0
+    - -0.3
+    size_m:
+    - 0.2
+    - 0.2
+  left:
+    center_m:
+    - -0.3
+    - 0.0
+    size_m:
+    - 0.2
+    - 0.2
+  right:
+    center_m:
+    - 0.3
+    - 0.0
+    size_m:
+    - 0.2
+    - 0.2
+robot:
+  body_size_m:
+  - 0.105
+  - 0.085
+  - 0.0381
+  mass_kg: 0.144
+  wheel_radius_m: 0.0175
+  wheel_separation_m: 0.075
+  axle_offset_x_m: -0.0275
+  chassis_bottom_z_m: 0.01
+  skirt_bottom_z_m: 0.003
+  caster_radius_m: 0.005
+  wheel_width_m: 0.01
+  wheel_mass_kg: 0.01
+  wheel_floor_friction: 1.0
+  linear_speed_mps: 0.145
+  angular_speed_radps: 2.75
+gripper:
+  pivot_x_from_front_m: -0.005
+  pivot_half_spacing_m: 0.00575
+  jaw_length_m: 0.03
+  jaw_beam_start_m: 0.012
+  jaw_lateral_offset_m: 0.0056
+  jaw_width_m: 0.0073
+  jaw_closed_angle_rad: 0.0
+  jaw_open_angle_rad: 0.663
+  actuation_time_s: 0.25
+  grip_holding_force_n: 2.0
+  jaw_speed_radps: 10.47
+  jaw_height_m: 0.0073
+  jaw_bottom_z_m: 0.002
+  jaw_mass_kg: 0.002
+objects:
+  lego:
+    size_m:
+    - 0.032
+    - 0.016
+    - 0.0096
+    mass_kg: 0.002
+    floor_friction_xy:
+    - 0.5
+    - 0.5
+  toy_car:
+    size_m:
+    - 0.08
+    - 0.033
+    - 0.027
+    mass_kg: 0.067
+    floor_friction_xy:
+    - 0.05
+    - 0.5
+contact:
+  robot_object_friction: 0.3
+real_world_effects:
+  command_latency_s:
+  - 0.0
+  - 0.1
+  wheel_gain:
+  - 0.92
+  - 1.08
+  speed_gain:
+  - 0.85
+  - 1.15
+  motor_lag_s:
+  - 0.0
+  - 0.0
+  obs_position_noise_m: 0.003
+  obs_yaw_noise_rad: 0.05
+sim2d:
+  physics_dt_s: 0.008333333333333333
+  collision_slop_m: 0.0003
+  wall_collision_thickness_m: 0.1
+  solver_iterations: 60
+  jaw_stall:
+    enabled: false
+    depth_m: 0.003
+  grasp_fail:
+    enabled: true
+    base_prob: 0.05
+    offset_tol_m: 0.012
+    kick_m:
+    - 0.01
+    - 0.05
+gazebo:
+  # MacBook で書き足した（2026-10-25）: 方策の学習の後に足された項目。Gazebo の検出器の学習データ用で方策に関係しない。学習のときは無かった（= false）
+  segmentation_camera: false
+  physics_step_s: 0.001
+  floor_friction: 1.0
+  pose_publish_hz: 50.0
+  jaw_p_gain: 0.05
+  jaw_d_gain: 0.0004
+  jaw_max_torque_nm: 0.05
+  camera_pose:
+  - 0.0
+  - 0.0
+  - 1.0
+  - 0.0
+  - 1.5707963267948966
+  - 1.5707963267948966
+  camera_hfov_rad: 1.0
+  camera_image_px:
+  - 720
+  - 720
+  light_diffuse:
+  - 0.9
+  - 0.9
+  - 0.9
+  light_direction:
+  - -0.3
+  - 0.2
+  - -0.9
+  light_cast_shadows: true
+  scene_ambient:
+  - 0.4
+  - 0.4
+  - 0.4
+  floor_rgb:
+  - 0.55
+  - 0.45
+  - 0.35
+  work_area_rgb:
+  - 0.88
+  - 0.84
+  - 0.76
+  parking_xy_m:
+  - 0.0
+  - -5.0
+  toy_car_wheel_radius_m: 0.007
+  toy_car_wheel_width_m: 0.005
+  toy_car_axle_x_frac: 0.65
+  toy_car_wheel_mass_kg: 0.002
+  toy_car_wheel_damping: 2.3e-06

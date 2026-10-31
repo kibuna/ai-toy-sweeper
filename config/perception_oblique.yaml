@@ -1,0 +1,48 @@
+# 斜め上のカメラの、背景との差による物体の検出（toy_sweeper.perception_oblique）。
+# 2026-10-18、Gazebo の画像で最初に決めた値。実カメラでは何も置いていない床の写真で決め直す（すべて未検証）。
+# 明るさ（L）の差の重み。照り返しや影は主に明るさの差なので小さく見る（色の差 a, b は 1）。2026-10-18、0.3 では Gazebo の
+# ロボットの影（明るさの差 約 −60）を物体として拾った → 0.2（影は 12 で閾値の下）。黒い物体（約 −150）は 30 で拾える
+luma_weight: 0.2
+# 重みつきの Lab の距離。2026-10-18、Gazebo の斜め上の画像で物体の位置の差を測った: 赤・青・オレンジ 45〜90、黄色・黄緑 40〜50、
+# 緑 28〜45、白 6〜20（明るい床の上の白は、明るさも色味もほとんど変わらない → カメラで見る盤面に白は出さない）。
+# 25 では緑が際どかったので 18（未検証）
+threshold: 18.0
+min_area_m2: 0.00015       # LEGO 2×4 の上面 5e-4 m² の 3 割（爪や他の物体に半分隠れても拾う）
+max_area_m2: 0.02          # 物体が数個くっついても届かない大きさ。超えたら照明かカメラの変化として例外
+object_mid_height_m: 0.008 # 塊の輪郭を戻す水平面の高さ: LEGO（11 mm）とミニカー（25 mm）の高さの半分の間
+robot_height_m: 0.045      # ロボットを除く範囲の高さ: 車体 38 mm + 余裕（micro:bit は未計上）
+robot_margin_m: 0.01       # 車体を除く範囲の余白: ArUco の誤差 数 mm + 影
+# 爪を除く範囲の余白。車体と同じ 1 cm では、閉じた爪の間（15 mm）の物体まで消えた（2026-10-18、Gazebo）
+jaw_margin_m: 0.003
+# 爪を閉じていて、前のフレームで爪の間（中心からこの距離以内）にあった追跡が見えないときは、爪の中心にあるものとして
+# 追跡をつなぐ（挟んだ物体は爪と車体に隠れやすい）。爪の内側の隙間の半分 + 余裕
+held_radius_m: 0.025
+# 見失った対象を同じ色の追跡に付け直す条件（field.rehearsal）: 対象の最後の位置からの距離の上限（弾かれた物体は 15 cm 前後
+# まで飛んだ）と、長辺の比の上限（同じ色のミニカーと LEGO を取り違えない。LEGO 32 mm、ミニカー 65 mm）
+reassociate_max_m: 0.2
+reassociate_size_ratio: 1.4
+# 見失った対象を、同じ色の物とくっついて大きくなった名前のない塊（対象より長く、これ以下）に付け直す（普通の候補が無いとき）。
+# 塊ごと押して入れる（2026-10-23。同じ色でくっついた物はどちらも運べばよいので、押して入れる）。
+# Gazebo のリハーサルは 0（しない、今まで）。実機と、リハーサルの実機の決まり（--rules real）は config/field.yaml の real
+merged_max_length_m: 0.0
+# 追跡のフレーム間の対応付けで、前のフレームと色度（×255）がこれ以上違う検出にはつながない（perception.Tracker）。
+# Gazebo のリハーサルは 0（色を見ない、今まで）。実機と、リハーサルの実機の決まり（--rules real）は config/field.yaml の real
+track_chroma_gate: 0.0
+# 対象を見失ったときの仕切り直し（field.rehearsal、2026-10-18）: 爪を開いて recover_back_steps 歩下がり、
+# 撮り直して、同じ色・大きさの物体を recover_search_m 以内で探す。recover_max 回で見つからなければ止める（すべて未検証）
+recover_back_steps: 4      # 1 歩 2 cm で 8 cm。車体（8.5 cm）の陰から出る
+recover_search_m: 0.4
+recover_max: 3
+# 対象が見えない（ロボットの陰など）状態がこの歩数続いたら、仕切り直す（下がって撮り直す）。2026-10-18、運び終えた LEGO が
+# ゴールの角で車体の陰に入り、完了と判定できないまま 200 歩止まった。2 秒
+recover_unseen_steps: 8
+open_px: 3                 # 雑音を消すカーネル（フル HD で 1 mm 前後）
+# 近い画素をつなぐ（閉じる）カーネル。Gazebo のリハーサルは 0（しない、今まで）。実機は config/field.yaml の real.close_px
+close_px: 0
+# くっついた違う色の物体を色と場所で分ける（perception_oblique.split_by_color）。Gazebo のリハーサルは false（今まで）。
+# 実機は config/field.yaml の real で有効にする。値は実機の画像で決めた（field.yaml の real を見よ）
+color_split: false
+split_chroma_min: 15.0
+split_min_ab: 30.0
+split_min_fraction: 0.3
+split_min_separation: 0.4

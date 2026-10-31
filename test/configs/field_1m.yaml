@@ -1,0 +1,9 @@
+# 汎化の確認: 作業領域を 0.8 m → 1.0 m 四方に広げる（ゴールは四隅、同じ大きさ）。評価専用
+sim:
+  work_area:
+    size_m: [1.0, 1.0]
+  goal_zones:
+    top_left:     {center_m: [-0.4, 0.4],  size_m: [0.2, 0.2]}
+    top_right:    {center_m: [0.4, 0.4],   size_m: [0.2, 0.2]}
+    bottom_left:  {center_m: [-0.4, -0.4], size_m: [0.2, 0.2]}
+    bottom_right: {center_m: [0.4, -0.4],  size_m: [0.2, 0.2]}

@@ -1,0 +1,223 @@
+# シミュレーション（2D / Gazebo 共通）の寸法と物理。
+# ここは基準の値（Cutebot V3 の到着前の推定を含む）。実機で測った車体・速さ・寸法は config/experiments/hw_1022.yaml などの
+# 差し替えで上書きして学習した（一覧は config/experiments/README.md）。
+
+work_area:
+  # 初期の実験領域（0.8〜1.0 m 四方の下限）。カメラ分解能を確かめてから広げる。
+  size_m: [0.8, 0.8]
+
+walls:
+  # 作業領域の端は壁（2026-10-16 に決めた）。ロボットも物体も外へは出ない。
+  # false にすると壁を置かず、ロボットか物体の中心が外に出たら失敗（out_of_area、v19nw）
+  enabled: true
+  # 実際の壁の高さ・厚さ・材質は未定なので仮値。2026-10-18、ダンボールで低く作る → 3 cm（Gazebo の見え方だけに
+  # 効く。斜め上のカメラから壁の陰になる床が狭くなる。作ったら測る）
+  height_m: 0.03
+  thickness_m: 0.01
+  # Chipmunk は積で合成する（物体側 1.0 なので物体との摩擦はこの値、ロボットとは × robot_object_friction）
+  friction: 0.5
+  # 壁なしのとき、ロボットか物体の中心が作業領域の縁から外へこの距離を超えたら失敗（out_of_area）。0 は v19nw と同じ
+  # 「出たら失敗」。壁ありでは使わない（外に出たら物理の不具合として例外）。v30 の値は config/experiments/free_area.yaml
+  out_of_area_margin_m: 0.0
+
+goal_zones:
+  # 指示で使う名前付きの片付け先（指示の destination）。2026-10-16 に四隅にした（v6）。
+  # 0.2 m 四方は、LEGO 2×4（32 mm）の約 6 倍、ミニカー（65 mm 仮値）の約 3 倍。実験マットのテスト位置に合わせて決め直す（仮値）。
+  # 学習のゴールは乱数の長方形（task.yaml goal_mode: random）なので、ここを変えても学習し直す必要はない
+  top_left:     {center_m: [-0.3, 0.3],  size_m: [0.2, 0.2]}
+  top_right:    {center_m: [0.3, 0.3],   size_m: [0.2, 0.2]}
+  bottom_left:  {center_m: [-0.3, -0.3], size_m: [0.2, 0.2]}
+  bottom_right: {center_m: [0.3, -0.3],  size_m: [0.2, 0.2]}
+  # 2026-10-18、「うえ・した・ひだり・みぎ」も行き先にした。各辺の真ん中の 0.2 m 四方（四隅と同じ大きさ）。
+  # 四隅との間は 0.1 m あく。上はカメラ画像の上（部屋の奥）を仮定（config/prompts/README.md）
+  top:          {center_m: [0.0, 0.3],   size_m: [0.2, 0.2]}
+  bottom:       {center_m: [0.0, -0.3],  size_m: [0.2, 0.2]}
+  left:         {center_m: [-0.3, 0.0],  size_m: [0.2, 0.2]}
+  right:        {center_m: [0.3, 0.0],   size_m: [0.2, 0.2]}
+
+robot:
+  # 本体は ELECFREAKS Smart Cutebot（EF08209、基板 V3.0）と推定（ケニスの商品写真との照合、2026-10-16 調査）。
+  # 寸法は EF08209 の 85.68 × 85.34 × 38.10 mm（micro:bit を除く高さ）。ケニスの 65 mm は micro:bit を立てた高さと見られる。
+  body_size_m: [0.0857, 0.0853, 0.0381]
+  # ケニス公称の約 125 g（micro:bit と電池込み）にグリッパー（M5Stack Unit Catch 公称 22.1 g）を足した値
+  mass_kg: 0.147
+  # 仮値。車輪寸法は販売ページに記載なし。到着後ノギスで実測
+  wheel_radius_m: 0.021
+  wheel_separation_m: 0.07
+  # 車軸（左右の駆動輪の中点、旋回中心）の車体中心からの前後位置。負は後方。
+  # Cutebot 系は「後部の駆動輪 2 個＋前部の金属ボールキャスター」構成と説明されている
+  # （ELECFREAKS / Vittascience の製品説明、2026-10-16 確認。V3 で同じかは未確認）。
+  # 値は仮値。実機で車輪軸の位置を実測して置き換える。
+  # ロボット姿勢 Pose2D はこの車軸中点の位置と向きを表す。
+  axle_offset_x_m: -0.02
+  # 以下は Gazebo（3D）でのみ使う。2D は平面なので高さを持たない。
+  # 仮値。車体底面の床からの高さ。LEGO（9.6 mm）より高いと車体前面で押せず、指だけで押すことになる。
+  # 実機で実測する（指先の最低高さと同じ確認）。
+  chassis_bottom_z_m: 0.012
+  # 車体の外周を床近くまで覆うスカート（樹脂板）の下端の高さ（薄い樹脂板・柔軟なスカート材を想定）。
+  # 2026-10-16、chassis_bottom_z_m（12 mm）が LEGO の高さ（9.6 mm）より高いと Gazebo で LEGO が車体の下に潜り、
+  # 2D で学習した PPO の成功率が 1.00 → 0.25 に落ちた。
+  # 2D シミュレータは「物体は車体の下に潜れない」前提なので、この値は物体の高さ未満でなければならない（Sim2D が検査）。
+  # 実機の車体前面・側面の床からの高さを実測し、LEGO が潜るならスカートを付ける。3 mm は仮値。
+  skirt_bottom_z_m: 0.003
+  # 仮値。前部ボールキャスターの半径（摩擦 0 の球として扱う）
+  caster_radius_m: 0.006
+  # 仮値。駆動輪の幅
+  wheel_width_m: 0.01
+  # 仮値。駆動輪 1 個の質量（車体質量 mass_kg の内数）
+  wheel_mass_kg: 0.01
+  # 仮値。タイヤと床の摩擦係数（ゴムタイヤとフローリングの一般的な範囲 0.6〜1.0 の上側）
+  wheel_floor_friction: 1.0
+  # 仮値。指令の例 0.06 m/s より少し速くした。1 Action 0.25 s で 2 cm 進む。
+  linear_speed_mps: 0.08
+  # 仮値。1 Action 0.25 s で約 14°。押す向きを合わせられる細かさとして選んだ。
+  angular_speed_radps: 1.0
+
+gripper:
+  # グリッパーは M5Stack Unit Catch（U102、ELECFREAKS Mechanical Catch EF10159 として販売）と推定。
+  # SG92R サーボ 1 個が、歯車でつながった 2 本の爪を左右対称に回す（平行移動ではない）。
+  # 寸法は公式図面 https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1081/U102-unit-catch.pdf から読み取った
+  # （図面の縮尺から画素で読んだ値を含む。実物で確認する）。
+  # 爪はロボット座標系で、軸（車体前面から pivot_x_from_front_m 前、左右 ±pivot_half_spacing_m）を中心に回る。
+  # 1 本の爪は「軸から外へ曲がる腕」と「その先の梁」からなる。閉じた状態（角度 0）で左右の梁は前方に平行。
+  # 角度は閉じた状態から外向きに測る。
+  # 2026-10-16: 最初は爪を軸から先端までの 1 本の直線（閉 10°）で近似したが、閉じると V 字になり、
+  # Gazebo で挟んだ LEGO を前へ押し出した（test_gazebo.py::test_grasp_and_carry）。図面の形に合わせて直した。
+  pivot_x_from_front_m: 0.005    # 仮値。取付位置は写真のみで寸法なし。実測
+  pivot_half_spacing_m: 0.00575  # 図面: 歯車中心の間隔 約 11.5 mm（画素から読み取り）
+  jaw_length_m: 0.035            # 図面: 軸から先端の穴まで 約 31.5 mm ＋ 梁の端 3.5 mm
+  jaw_beam_start_m: 0.012        # 図面: 梁の根元（いちばん軸寄りの穴 15.5 mm − 梁の端 3.5 mm）
+  jaw_lateral_offset_m: 0.0056   # 図面（閉）: 梁の中心線が軸より外側にずれる量。先端の穴の間隔 22.72 mm / 2 − 5.75 mm
+  jaw_width_m: 0.0073            # 爪は LEGO Technic の梁（穴 φ4.87, 8 mm ピッチ）。梁の幅 7.3 mm
+  jaw_closed_angle_rad: 0.0      # 閉: 梁が平行。内側の隙間 15.4 mm（LEGO 2×4 の短辺 15.8 mm をちょうど挟む）
+  jaw_open_angle_rad: 0.716      # 公称の開いた幅 72 mm から逆算した 41°（サーボ制限 45° 以内と整合）
+  # グリッパー Action 1 回の所要時間。SG92R の 0.1 s/60° で 41° 回ると 0.07 s。指令の遅延（未測定）を見込み
+  # 1 Action（0.25 s）に揃えた。実機で開閉時間を測る
+  actuation_time_s: 0.25
+  # 挟んだ物体をロボットに留めておく力の上限（2D の把持の拘束）。2026-10-16、上限なしでは、挟んだ LEGO が隣の LEGO を
+  # 壁に押し付けて秒速 9 m で弾き出し、壁をすり抜けた（学習中に例外で検出、test/data/wall_penetration_repro2.txt）。
+  # SG92R の 0.245 N m を梁の中央（軸から 23.5 mm）で受け、2 本の爪の摩擦 0.3 とすると止まる寸前で約 6 N。
+  # 駆動力 1.44 N との間の 2 N にした仮値。実機で、挟んだ LEGO を引き抜く力を測る（unmodeled.gripper_grasp）
+  grip_holding_force_n: 2.0
+  # 爪の回る速さ（2D と Gazebo）。SG92R の公称 0.1 s / 60°（4.8 V、無負荷）= 10.5 rad/s。2026-10-18、Gazebo では目標角を
+  # 一度に送ると関節の制御が約 25 ms で閉じ（公称の 3 倍近く速い）、ずれた LEGO を 4〜8 cm 弾いた。この速さで角度を少しずつ
+  # 送る。2D（sim2d）も同じ日から、物理の刻みごとにこの速さで回す（一瞬で置き換えると、爪が物体にめり込んで閉じ込め、
+  # ロボットが 1 歩で 0.6 rad 回った）。負荷時の速さ・当たって止まる力は
+  # 実機で測る（未検証）。actuation_time_s の間に開閉が終わることを config.validate で検査する
+  jaw_speed_radps: 10.47
+  # 以下は Gazebo のみ
+  jaw_height_m: 0.0073           # Technic の梁の厚さ
+  jaw_bottom_z_m: 0.002          # 仮値。爪の下端の床からの高さ（ケニスの写真では床近く）。実測
+  jaw_mass_kg: 0.002             # 仮値（mass_kg の内数）
+
+objects:
+  lego:
+    # LEGO 2×4 ブロックの規格寸法 31.8 × 15.8 mm、高さ 9.6 mm（突起除く）。使用する個体を実測して確認。
+    size_m: [0.0318, 0.0158, 0.0096]
+    # 仮値。2 g。実測で置換
+    mass_kg: 0.002
+    # 仮値。床（フローリング）との摩擦係数 [物体の x 方向（長辺）, y 方向]。押し実験で同定
+    floor_friction_xy: [0.5, 0.5]
+  toy_car:
+    # 仮値。トミカ程度（全長 65〜75 mm、幅 30 mm、高さ 25 mm）。使うミニカーを実測
+    size_m: [0.065, 0.03, 0.025]
+    # 仮値。ダイキャストのミニカーは数十 g。実測で置換
+    mass_kg: 0.03
+    # 仮値。前後（x）は車輪が転がるので小さく、横（y）は滑るので大きい。押し実験で同定
+    floor_friction_xy: [0.05, 0.5]
+
+contact:
+  # 仮値。ロボット・指と物体の間の摩擦係数
+  robot_object_friction: 0.3
+
+real_world_effects:
+  # 実機の誤差のモデル（2D / Gazebo 共通。ToySweeperEnv が掛ける）。エピソードごとに範囲 [下限, 上限] から一様に引く
+  # （Domain Randomization）。この基本設定は「誤差なし」で、範囲は実機計測で決める。
+  command_latency_s: [0.0, 0.0]   # 指令が車輪に効き始めるまでの遅延。その間は前の指令が続く。0.025 s 刻みに丸める
+  wheel_gain: [1.0, 1.0]          # 左右のモーターそれぞれの利得（左右独立に引く。速さの誤差と左右差を表す）
+  speed_gain: [1.0, 1.0]          # 左右共通の速さの倍率（wheel_gain に掛ける。電池の減りなど）。幅 0 なら乱数を引かない
+  # 車輪の速さが指令に追いつく時定数 τ（v36、2026-10-30）。物理の刻みごとに v += (v_cmd − v) × dt / τ（止めた後も惰性で動く）。
+  # 0 なら指令の刻みからその速さ（v35 までと同じ）。幅 0 なら乱数を引かない。範囲は config/experiments/motor_lag.yaml
+  motor_lag_s: [0.0, 0.0]
+  obs_position_noise_m: 0.0       # 観測するロボット・物体の位置に足す正規ノイズの標準偏差（報酬と判定は真値）
+  obs_yaw_noise_rad: 0.0          # 同じく向きのノイズ
+
+sim2d:
+  # 物理の刻み。ロボット 0.08 m/s で 1 刻み 0.67 mm（LEGO 短辺 15.8 mm の 1/20 以下）。
+  # 押し込み時の貫通を避けるための選択で、1/240 との比較は未実施（未検証）。
+  physics_dt_s: 0.008333333333333333
+  # pymunk の既定 collision_slop=0.1 は単位系依存で、メートル単位では 10 cm になり使えない。
+  # 物体寸法の 1/50 程度の 0.3 mm にした（未検証）。
+  collision_slop_m: 0.0003
+  # 2D の壁の衝突形状の厚さ（内側の面は walls と同じで、外側へ厚くする）。2026-10-16、厚さ 1 cm の壁を、弾き出された
+  # LEGO（秒速 9 m、1 刻み 7.5 cm）がすり抜けた。1 刻みで 10 cm 進む速さ（12 m/s）まですり抜けない 10 cm にした
+  wall_collision_thickness_m: 0.1
+  # pymunk の既定 iterations=10。2026-10-16、壁を入れた後、ロボット（147 g）と壁の間に挟まれた LEGO（2 g）が
+  # 少しずつ壁にめり込み、中心が壁の外に出た（学習中に例外で検出）。質量比の大きい重なった接触で反復が足りないため。
+  # 壁なしで学習した PPO（壁へ押し付けがち）で 60 エピソード比べた最大めり込み: 20 回 6.9 mm、60 回 2.6 mm、
+  # 100 回 2.3 mm、刻み 1/240 s で 2.5 mm。速度の差は小さく、60 回にした
+  solver_iterations: 60
+  # 挟み損ね（v21）: 爪を閉じたとき、物体の中心の爪の中心線からの横のずれ |ly| で失敗しやすくする
+  # （失敗の確率 = base + (1 − base) × min(1, |ly| / offset_tol)²）。失敗したらつながず、物体を滑る距離 kick_m で弾く。
+  # 既定は無効、v21 で有効。値は仮（Gazebo では 4〜8 cm 飛んだ、実機の SG92R では 2 cm 前後の見積もり。実機で測る）
+  # 爪がふさがれたら止まる（2026-10-19）。爪の形を刻みごとに次の角度へ置き直すとき、置き直した形が物体・壁に depth_m より深く
+  # めり込み、置き直す前より深ければ、その刻みは回さない（サーボの失速。実物と Gazebo の爪はトルクの上限で止まる）。
+  # 無いと、逃げ場の無い物体に爪が 9 mm 以上めり込み、開くときにロボットが 1 歩で約 1 rad 回って学習が止まった
+  # （v24 s0・v25 s0・v25 s2・v26 s1、約 15 億ステップで 4 回）。depth_m は、壁に押し付けた
+  # LEGO の普通の接触のめり込み（solver_iterations 60 で最大 2.6 mm、上の solver_iterations の記録）より少し深い 3 mm
+  # （未検証）。既定は無効（v26 までの物理）、有効は test/configs/jaw_stall.yaml
+  jaw_stall:
+    enabled: false
+    depth_m: 0.003
+  grasp_fail:
+    enabled: false
+    base_prob: 0.05
+    offset_tol_m: 0.012
+    kick_m: [0.01, 0.05]
+
+gazebo:
+  # Gazebo の物理刻み。gz-sim の既定 1 ms を明示。LEGO（2 g, 9.6 mm）の接触が安定するかは
+  # test/test_gazebo.py の押し試験で確認する。0.5 ms との比較は未実施（未検証）。
+  physics_step_s: 0.001
+  # 床の摩擦係数。Gazebo（DART）は接触する 2 面の小さい方の摩擦係数を使う前提で、床は大きめにして
+  # 物体側（objects.*.floor_friction）とタイヤ側（wheel_floor_friction）の値がそのまま効くようにする。
+  # 合成則が min であることは未確認。
+  floor_friction: 1.0
+  # 姿勢の出力周期（sim 時間）。1 Action 0.25 s の終わりの姿勢を読めればよいので 1 Action の 12.5 倍。
+  pose_publish_hz: 50.0
+  # 爪の角度制御（トルクの PID）。爪 2 g・長さ 35 mm の慣性 8e-7 kg m^2 で固有周期 25 ms（1 ms 刻みで安定）、
+  # 臨界減衰になる d を選んだ。トルク上限 0.05 N m は先端で約 1.4 N（LEGO の床摩擦 0.01 N より十分大きい）。
+  # SG92R の公称 0.245 N m より小さいのは数値安定のため。すべて未検証。
+  jaw_p_gain: 0.05
+  jaw_d_gain: 0.0004
+  jaw_max_torque_nm: 0.05
+  # 俯瞰カメラ（動画記録用。Policy の入力には使わない）。作業領域 0.8 m と周囲が入る高さと画角。
+  # 姿勢 [x, y, z, roll, pitch, yaw]（m、rad、Gazebo の pose。カメラは自分の +x を向く）。真上: 高さ 1 m、pitch π/2。
+  # 斜め上からは config/experiments/gazebo_oblique.yaml
+  camera_pose: [0.0, 0.0, 1.0, 0.0, 1.5707963267948966, 1.5707963267948966]
+  camera_hfov_rad: 1.0
+  camera_image_px: [720, 720]
+  # 物体ごとのマスク（instance segmentation）を撮るカメラを、上のカメラと同じ姿勢・画角で置く（2026-10-25、学習する検出器の
+  # データを作るときだけ。scripts/gen_seg_data.py）。リハーサル・学習では要らないので false
+  segmentation_camera: false
+  # 照明と床の色（2026-10-19、sim2real のため条件を変えて試す）。既定は今までの
+  # World と同じ描画になる値: 太陽（平行光）の色 0.9 と向きは最初の World の値、影あり、環境光は SDF の既定 0.4、
+  # 床は木目の茶、作業領域は明るいベージュ（どれも見た目で決めた仮の値。実機の部屋の照明・床は未測定）
+  light_diffuse: [0.9, 0.9, 0.9]
+  light_direction: [-0.3, 0.2, -0.9]
+  light_cast_shadows: true
+  scene_ambient: [0.4, 0.4, 0.4]
+  floor_rgb: [0.55, 0.45, 0.35]
+  work_area_rgb: [0.88, 0.84, 0.76]
+  # 使わない物体を置いておく場所（作業領域の外）。Gazebo の World には枠ごとに LEGO とミニカーの両方がある
+  parking_xy_m: [0.0, -5.0]
+  # Gazebo のミニカーは、車体と自由に回る 4 輪からなる（詳細なモデル）。前後は転がり、横は車輪が滑る。
+  # 横の摩擦は objects.toy_car.floor_friction_xy[1] を車輪に使う。前後の抵抗は車輪の関節の粘性で表すので、
+  # 2D の μ_x（クーロン摩擦）とは形が違う（未検証）。寸法はすべて仮値（使うミニカーを実測）
+  toy_car_wheel_radius_m: 0.007
+  toy_car_wheel_width_m: 0.005
+  toy_car_axle_x_frac: 0.65       # 前後の車軸の位置（車体の半長に対する比）
+  toy_car_wheel_mass_kg: 0.002    # objects.toy_car.mass_kg の内数
+  # 車輪の関節の粘性 [N m s/rad]。2D の前後摩擦 μ_x m g（0.05 × 30 g × 9.81 = 0.0147 N）と、押す速さ 0.08 m/s
+  # （車輪 11.4 rad/s）で同じ抵抗になる値: 0.0147 / 4 輪 × 0.007 m / 11.4 rad/s。最初の 1e-5 は 4 倍強く、ほぼ転がらなかった
+  toy_car_wheel_damping: 0.0000023

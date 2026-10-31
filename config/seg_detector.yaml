@@ -1,0 +1,9 @@
+# 学習する物体の検出器（toy_sweeper.seg_detector）。2026-10-25
+# モデル（ONNX、scripts/train_seg.py が書き出す）。入力の大きさは ONNX に入っている
+model: checkpoints/seg_v1/best.onnx
+# 物体とみなす確からしさの下限・重なりの除去の IoU の上限は ultralytics の推論の既定（0.25、0.7）のまま。未検証
+# （くっついた物体は箱が大きく重なるので、iou を下げると片方を消すおそれがある）
+conf: 0.25
+iou: 0.7
+# マスクの閾値は ultralytics と同じ 0.5（sigmoid）。未検証
+mask_threshold: 0.5

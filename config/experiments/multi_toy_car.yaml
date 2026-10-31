@@ -1,0 +1,5 @@
+# v28（2026-10-19 夕方）: Stage 7・8 の対象の半分ほどをミニカーにする
+# （ミニカーなどをまとめて運べるかの検証）。0.5 は LEGO とミニカーが同じくらい混ざる値（未検証）
+task:
+  sampling:
+    multi_target_toy_car_probability: 0.5

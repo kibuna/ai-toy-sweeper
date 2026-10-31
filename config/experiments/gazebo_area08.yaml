@@ -1,0 +1,11 @@
+# 2026-10-23: free_area（v30 以降）で学習した方策を Gazebo のリハーサルで動かすため、作業領域を Gazebo の World と同じ
+# 0.8 m 四方（config/sim.yaml の work_area、マーカーと床の大きさ）に固定する。free_area.yaml の後に重ねる（観測の
+# area_size はそのまま）。Gazebo の手順は盤面ごとの作業領域を扱わないため。0.8 は学習の範囲 0.6〜1.0 m の中。
+# 壁なしと外の余白は free_area.yaml と同じ値（単独でも読めるように。範囲は壁なしのときだけ使える）
+sim:
+  walls:
+    enabled: false
+    out_of_area_margin_m: 0.10
+task:
+  sampling:
+    work_area_size_range_m: [[0.8, 0.8], [0.8, 0.8]]

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>toy_sweeper_gazebo</name>
+  <version>0.1.0</version>
+  <description>AI Toy Sweeper の Gazebo Harmonic World と ros_gz_bridge の起動</description>
+  <maintainer email="noreply@example.com">kibuna</maintainer>
+  <license>MIT</license>
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <export><build_type>ament_python</build_type></export>
+</package>

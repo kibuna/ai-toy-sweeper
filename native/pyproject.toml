@@ -1,0 +1,17 @@
+[build-system]
+requires = ["maturin>=1.8,<2"]
+build-backend = "maturin"
+
+[project]
+name = "toy-sweeper-native"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy"]
+
+[tool.maturin]
+features = ["extension-module"]
+profile = "release"
+
+[tool.uv]
+# Rust と C のソースが変わったら uv が作り直す
+cache-keys = [{ file = "pyproject.toml" }, { file = "Cargo.toml" }, { file = "build.rs" }, { file = "src/**/*.rs" }, { file = "src/**/*.c" }, { file = "chipmunk/**/*" }]

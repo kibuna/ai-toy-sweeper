@@ -1,0 +1,4 @@
+# v20b: 車体（アームの外）に触れた対象 1 個あたりの減点を 0.1 → 0.3。未検証
+task:
+  reward:
+    chassis_contact_penalty: 0.3

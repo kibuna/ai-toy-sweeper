@@ -1,0 +1,27 @@
+{
+  "git_commit": "ca2a5cb5e99e3cd1fe84f0fc906326b09cb5efb3-dirty",
+  "train_seed": 0,
+  "n_envs": 1024,
+  "env_backend": "native",
+  "total_timesteps": 35010816,
+  "resume": "checkpoints/ppo_v32_s0/ckpt_64989184_steps.zip",
+  "overrides": [
+    "config/experiments/set_encoder.yaml",
+    "config/experiments/chassis03.yaml",
+    "config/experiments/imperfect.yaml",
+    "config/experiments/gpu_ppo.yaml",
+    "config/experiments/cleanup.yaml",
+    "config/experiments/corner_edge.yaml",
+    "config/experiments/cleanup_guidance.yaml",
+    "config/experiments/multi_toy_car.yaml",
+    "config/experiments/efficient.yaml",
+    "config/experiments/free_area.yaml",
+    "config/experiments/robot_8hz.yaml",
+    "config/experiments/hw_1022.yaml",
+    "config/experiments/steps_x2.yaml"
+  ],
+  "bc_demos": null,
+  "init": null,
+  "start_stage": null,
+  "derived": "ppo_v32_s0/final.zip の重みをそのまま、歩数の上限だけ config/experiments/steps_x2.yaml（600 + 300 / 個）にして使う（学習はしていない。2026-10-22）"
+}

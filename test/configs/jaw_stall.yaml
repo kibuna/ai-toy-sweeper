@@ -1,0 +1,5 @@
+# 爪がふさがれたら止まる物理（2026-10-19、config/sim.yaml sim2d.jaw_stall の説明）。学習が止まる例外（1 歩で大きく回る）を無くす
+sim:
+  sim2d:
+    jaw_stall:
+      enabled: true

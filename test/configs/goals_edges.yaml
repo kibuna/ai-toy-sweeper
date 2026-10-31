@@ -1,0 +1,7 @@
+# 汎化の確認: 名前付きのゴールを四隅から各辺の中央（0.2 × 0.3 m）へ動かす。評価専用（学習は乱数のゴール）
+sim:
+  goal_zones:
+    top_left:     {center_m: [0.0, 0.3],  size_m: [0.3, 0.2]}
+    top_right:    {center_m: [0.3, 0.0],  size_m: [0.2, 0.3]}
+    bottom_left:  {center_m: [-0.3, 0.0], size_m: [0.2, 0.3]}
+    bottom_right: {center_m: [0.0, -0.3], size_m: [0.3, 0.2]}

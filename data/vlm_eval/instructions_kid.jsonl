@@ -1,0 +1,28 @@
+{"text": "あかい れごを みぎうえに かたづけて", "expect": {"target_classes": ["lego"], "target_colors": ["red"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "きいろい ぶろっく みぎしたに もってって", "expect": {"target_classes": ["lego"], "target_colors": ["yellow"], "excluded_classes": [], "destination": "bottom_right"}}
+{"text": "みにかー ひだりしたに やって", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": [], "destination": "bottom_left"}}
+{"text": "くろい れご ぜんぶ みぎうえ", "expect": {"target_classes": ["lego"], "target_colors": ["black"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "みどりの ブロックを ひだりうえに おいて", "expect": {"target_classes": ["lego"], "target_colors": ["green"], "excluded_classes": [], "destination": "top_left"}}
+{"text": "しろい れごを ひだりしたに", "expect": {"target_classes": ["lego"], "target_colors": ["white"], "excluded_classes": [], "destination": "bottom_left"}}
+{"text": "あかと あおの れごを みぎしたに", "expect": {"target_classes": ["lego"], "target_colors": ["red", "blue"], "excluded_classes": [], "destination": "bottom_right"}}
+{"text": "くるまを みぎうえに かたづけて", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": [], "destination": "top_right"}}
+{"text": "れごを ぜんぶ ひだりうえに", "expect": {"target_classes": ["lego"], "target_colors": [], "excluded_classes": [], "destination": "top_left"}}
+{"text": "あおいレゴ ひだりうえ", "expect": {"target_classes": ["lego"], "target_colors": ["blue"], "excluded_classes": [], "destination": "top_left"}}
+{"text": "ぬいぐるみ かたづけて", "expect": null}
+{"text": "あかい れご", "expect": null}
+{"text": "ゆかを ふいて", "expect": null}
+{"text": "みぎうえ", "expect": null}
+{"text": "あかいの ぜんぶ みぎうえに もってって", "expect": {"target_classes": ["lego", "toy_car"], "target_colors": ["red"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "あおいのを みぎの うえに おいて", "expect": {"target_classes": ["lego", "toy_car"], "target_colors": ["blue"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "ぶーぶーは ひだりの したね", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": [], "destination": "bottom_left"}}
+{"text": "きいろいレゴさん ひだりうえに おうち かえろうね", "expect": {"target_classes": ["lego"], "target_colors": ["yellow"], "excluded_classes": [], "destination": "top_left"}}
+{"text": "くるまは そのままで れごを みぎしたに", "expect": {"target_classes": ["lego"], "target_colors": [], "excluded_classes": ["toy_car"], "destination": "bottom_right"}}
+{"text": "ねえねえ ろぼっと、みどりの れご みぎうえ", "expect": {"target_classes": ["lego"], "target_colors": ["green"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "あっちに もってって", "expect": null}
+{"text": "あかい れごを たべて", "expect": null}
+{"text": "きみどりの れごを うえに", "expect": {"target_classes": ["lego"], "target_colors": ["lime"], "excluded_classes": [], "destination": "top"}}
+{"text": "みずいろの ぶろっく ひだりに", "expect": {"target_classes": ["lego"], "target_colors": ["light_blue"], "excluded_classes": [], "destination": "left"}}
+{"text": "ぴんくの れご みぎに おいて", "expect": {"target_classes": ["lego"], "target_colors": ["pink"], "excluded_classes": [], "destination": "right"}}
+{"text": "おれんじの くるま したに", "expect": {"target_classes": ["toy_car"], "target_colors": ["orange"], "excluded_classes": [], "destination": "bottom"}}
+{"text": "黄緑のレゴを右上に", "expect": {"target_classes": ["lego"], "target_colors": ["lime"], "excluded_classes": [], "destination": "top_right"}}
+{"text": "黄色のレゴを上に運んでください", "expect": {"target_classes": ["lego"], "target_colors": ["yellow"], "excluded_classes": [], "destination": "top"}}

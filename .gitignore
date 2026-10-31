@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# pixi (ROS 2 / Gazebo 環境)
+.pixi/
+
+# colcon
+ros2_ws/build/
+ros2_ws/install/
+ros2_ws/log/
+
+# 生成物
+checkpoints/*
+!checkpoints/.gitkeep
+# 実機で使う方策（v36_s0_x2）と、その学習を始めた重み（v32_s0_x2）だけはリポジトリに入れる（再現のため。各 1.6 MB）
+!checkpoints/ppo_v32_s0_x2/
+!checkpoints/ppo_v36_s0_x2/
+dev_log/**/events.out.tfevents.*
+data/generated/
+videos/
+.claude/
+
+# カメラで撮った写真（部屋が写るので入れない。doc/camera_setup.md）
+data/camera/
+
+# 子どもの声の録音（話しかける画面・管理の画面の dev_log/<...>/audio/ と Gazebo 側の audio_sim/。この PC の外へ出さない）
+dev_log/**/audio*/
+# 聞き取った指示・返事のやりとり（子どもの言葉の書き起こしを含む。audio/ の transcripts.jsonl と同じ扱い。2026-10-28）
+dev_log/**/conversation*.jsonl
+# 話しかける画面の走りのログ（聞き取った文を含む）。ローカルだけに残す（2026-10-31。ログはリポジトリに入れる必要がないため）
+dev_log/field_app/
+# 校正を保存し直したときの前の値（scripts/calibrate_app.py・field_app の /calibrate が移す）。ローカルだけに残す（2026-10-31）
+data/calibration/history/
+
+# 実行時のログと評価の出力（学習・評価・BLE の確かめ・校正・音声サーバーなどが書く。聞き取った文を含むことがある）
+dev_log/
+data/evaluations/

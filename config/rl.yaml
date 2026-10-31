@@ -1,0 +1,84 @@
+# PPO 学習の設定。
+
+ppo:
+  # 開始値。SB3 の既定（lr 3e-4, n_steps 2048, gamma 0.99）と同じで、
+  # batch_size のみ既定 64 から 256 に変えている。すべて比較は未実施（未検証）。
+  learning_rate: 0.0003
+  # 学習率の変え方。constant は SB3 の既定（明示）。linear（0 へ直線に下げる）は PPO の論文（Schulman et al. 2017）の
+  # Atari と rl-baselines3-zoo の多くの設定の使い方。v21L の続きの学習で比べる（未検証）
+  lr_schedule: constant
+  n_steps: 2048          # 並列環境 1 つあたり
+  batch_size: 256
+  n_epochs: 10           # SB3 既定（明示）
+  gamma: 0.99
+  gae_lambda: 0.95       # SB3 既定（明示）
+  clip_range: 0.2        # SB3 既定（明示）
+  ent_coef: 0.0          # SB3 既定（明示）
+  net_arch: [64, 64]     # SB3 MlpPolicy の既定（明示）
+  # Observation から特徴を作る方法。flat は SB3 の既定（Observation をそのまま net_arch へ）で v15 まで。
+  # set は物体のスロットを共通の重みで符号化してまとめる（v16）。比較は v16 で行う
+  features: flat
+  # set のときの物体ごとの MLP の幅。DeepSets の論文（Zaheer et al. 2017）の点群の例は φ に 2〜3 層。
+  # net_arch と同じ 64 にした（未検証）
+  slot_hidden: [64, 64]
+
+training:
+  # 並列環境数。CPU 32 コアの学習 PC（本番も同じ PC）。8 と 16 の比較は未実施。
+  n_envs: 8
+  train_seed: 0
+  # 総ステップ。v1（単一 LEGO）は 300 万で成功率 1.00 に飽和した。v2 は Stage 6（散らかった盤面）が
+  # 難しく必要量が分からないため、飽和するかを学習曲線で確かめられる量として 2,000 万にした。
+  # 飽和点が分かったら見直す（未検証）。実測 約 3,600 steps/s（8 並列）
+  total_timesteps: 20000000
+  device: cpu            # SB3 公式: MlpPolicy の PPO は CPU の方が速い
+  # 学習プロセスの torch のスレッド数。既定（全コア 32）のまま 2 本並列で学習すると、スレッドの取り合いで
+  # 1 本あたり 3,600 → 約 1,000 steps/s に落ちた（2026-10-16）。2 と 4 の比較は未実施
+  torch_threads: 2
+  # 学習環境の実装。python: toy_sweeper.env.ToySweeperEnv を SubprocVecEnv で並列に。
+  # native: Rust 版（native/）を 1 つのプロセスで env_threads のスレッドに分けて進める。Python 版と同じ盤面・観測・報酬に
+  # なることは test/test_native_*.py が確かめる。既定は python のまま（native での学習の設定を比べるまで）
+  env_backend: python
+  # env_backend: native のときの環境のスレッド数（python のときは使わない）。未検証
+  env_threads: 32
+  # PPO の更新を GPU 向けに速くする（device: cuda のときだけ）。rollout を 1 回だけまとめて GPU に送り
+  # （toy_sweeper.gpu_buffer）、torch の分布の引数の検査を外し、代わりに反復ごとに重みが有限かを確かめる。
+  # 2026-10-18、同じ設定で重みが完全に一致することを確かめた（test/test_gpu_buffer.py）
+  fast_ppo: false
+  # env_backend: native のとき、env i の最初の盤面の Seed を train_seed × n_envs + i にする（false なら SB3 と同じ
+  # train_seed + i）。2026-10-18、1,024 並列で train_seed 0/1/2 の学習が最初の盤面の Seed を 1,023 個ずつ共有していた
+  # （番号が 1 つずれるだけ）とレビューで分かった。Seed 違いの学習を独立な試行にするため。python のときは使わない
+  disjoint_env_seeds: true
+  # 途中のチェックポイントの間隔（全 env の合計のステップ）。止まったときに --resume で失う量と、学習曲線を
+  # チェックポイントで評価するときの細かさで決める。20 万は 16 並列・CPU（約 760 steps/s、約 4 分ごと）のときの値で
+  # コードに直接書いていた。比較は不要な種類の値（結果を変えない）だが、速い設定では gpu_ppo.yaml で変える
+  checkpoint_every_steps: 200000
+
+bc:
+  # 模倣による初期化（scripts/train_ppo.py --bc）。すべて未検証の初期値
+  epochs: 10            # 手本全体を何周するか
+  batch_size: 1024
+  learning_rate: 0.001  # 教師あり学習なので PPO（3e-4）より大きくした
+  value_epochs: 10      # 価値の初期化（手本の割引リターンへの回帰）
+
+curriculum:
+  # 昇格条件。直近 window 本の成功率で判定
+  # v2。Stage 4〜6 の閾値 0.6 は Stage 4 の値に揃えた（未検証）。
+  # Stage 5（壁際、挟んで運ぶ）は 2026-10-16 に追加。PPO が爪を使わなかったため
+  # Stage 7（同じ色を全部まとめて、v7）は 2026-10-16 に追加。閾値 0.5 は未検証
+  # Stage 8（連続の色分けの 1 回分、v18）は 2026-10-18 に追加。Stage 7 から 8 への閾値は Stage 7 の最終の閾値と同じ 0.5、
+  # Stage 8 の最終の閾値 0.5 も同じ（未検証）
+  stages: [0, 1, 2, 4, 5, 6, 7, 8]
+  promote_success_rate: [0.9, 0.8, 0.7, 0.6, 0.6, 0.6, 0.5, 0.5]
+  window_episodes: 200   # 成功率 0.8 の推定誤差（標準誤差）が約 0.03 になる本数
+  # 昇格後も前の Stage の盤面を出す確率（復習）。v7 で昇格後に易しい Stage の成功率が落ちた（破滅的忘却）ため。
+  # 0.3 は未検証（今の Stage の練習を 7 割残す目安）
+  rehearsal_probability: 0.3
+
+evaluation:
+  # 開発用の評価 Seed。学習には使わない。設定の比較に何度も使ったので、事実上の検証用データ
+  # （2026-10-17 のレビューの指摘）。最終の数字は下の test_* で出す
+  seed_start: 10000
+  n_episodes: 100        # 50〜100 件の上限
+  # 最終評価用の Seed（比較・選択には使わない）。1,000 件で成功率 0.9 の標準誤差が約 0.01
+  test_seed_start: 20000
+  test_n_episodes: 1000

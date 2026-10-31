@@ -1,0 +1,87 @@
+[project]
+name = "toy-sweeper"
+version = "0.1.0"
+description = "AI Toy Sweeper: VLM + PPO + ROS 2 + Gazebo によるおもちゃ片付けロボット"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "numpy>=1.26,<2.3",
+    "pyyaml>=6.0",
+    "gymnasium>=1.0",
+    "stable-baselines3>=2.4",
+    "torch>=2.4",
+    "pymunk>=6.8",
+    "opencv-python-headless>=4.10",
+    "matplotlib>=3.9",
+    "tensorboard>=2.17",
+    # 音声入力のクライアント（MacBook、CPU）。faster-whisper はウェイクワード・停止語の書き起こし
+    # （torch を使わない）。onnxruntime は faster-whisper 同梱の Silero VAD を 1 フレームずつ動かすのに直接使う。
+    # sounddevice はマイク（--mic のときだけ import する）
+    "faster-whisper>=1.1",
+    "sounddevice>=0.5",
+    "onnxruntime>=1.17",
+    "bleak>=0.22",
+    # 話しかけるシミュレーションのブラウザ画面（scripts/talk_sim.py）
+    "fastapi>=0.143.2",
+    "uvicorn>=0.30",
+    # 学習環境の Rust 版（native/）。uv が maturin でビルドする。学習 PC（Linux）だけ
+    # （MacBook の音声のクライアントは学習しないので、Rust のビルドを要らなくする）
+    "toy-sweeper-native; sys_platform == 'linux'",
+    "pyobjc-framework-avfoundation>=12.2.2; sys_platform == 'darwin'",   # カメラの名前から番号を引く（MacBook だけ）
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    # 音声サーバー（本番は pixi の vlm 環境で動く）を、偽のモデルで単体テストするため（fastapi は本体の依存にある）
+    "httpx>=0.28.1",
+    # 試験用の日本語音声の合成（オフライン、scripts/make_voice_fixtures.py）と、その 48 kHz → 16 kHz の変換
+    "pyopenjtalk-plus>=0.4.1.post9",
+    "scipy>=1.18.1",
+]
+# 学習する物体の検出器の学習と ONNX への書き出し。学習 PC だけで使う
+# （`uv run --group detector ...`）。推論は本体の onnxruntime で動かすので、現場（MacBook）には要らない
+detector = [
+    "ultralytics>=8.3",
+    "onnx>=1.17",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/toy_sweeper"]
+
+# torch は学習 PC（Linux、RTX 3090）では CUDA 版、MacBook（音声のクライアント）では CPU 版。
+# 2026-10-18、PPO の更新はミニバッチ 256 では CPU と GPU が同じ（更新 1 回 4.0 s / 4.9 s）だが、16,384 では
+# GPU が 70 倍速い（5.0 s / 0.07 s）。学習環境の Rust 版で並列を増やし、大きなミニバッチを
+# GPU で回すため。cu130 は torch 2.14.1（CPU 版と同じ版）があり、ドライバ 610（CUDA 13 に対応）で動く
+[tool.uv.sources]
+toy-sweeper-native = { path = "native" }
+torch = [
+    { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+    { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+]
+# torchvision（ultralytics が使う）は torch と同じ取得元（版を揃える）
+torchvision = [
+    { index = "pytorch-cu130", marker = "sys_platform == 'linux'" },
+    { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+]
+
+[tool.uv]
+# ultralytics が引く opencv-python（GUI 版）を入れない。本体の opencv-python-headless と同じ cv2 を上書きし合うため
+override-dependencies = ["opencv-python; sys_platform == 'never'"]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["test"]

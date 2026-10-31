@@ -1,0 +1,10 @@
+# v24: 後片付けの練習。Curriculum の最後に Stage 9（後片付けから始まる盤面）を足す。
+# 使い方（v21L の重みから、Stage 9 から始めて、復習 0.3 で Stage 0〜8 も混ぜる）:
+#   uv run python scripts/train_ppo.py --run <run名> --init checkpoints/<run>/final.zip --start-stage 9 \
+#       --override config/experiments/imperfect.yaml config/experiments/cleanup.yaml
+rl:
+  curriculum:
+    stages: [0, 1, 2, 4, 5, 6, 7, 8, 9]
+    # 末尾の 0.5 は Stage 9 の最終の閾値（最後の Stage では昇格しないので、達したことを記録するだけ）。Stage 7・8 の最終の
+    # 閾値と同じ値にそろえた（比較はない。未検証）。Stage 8 の 0.5 は、ここでは Stage 8 → 9 の昇格の閾値になる（同じく未検証）
+    promote_success_rate: [0.9, 0.8, 0.7, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5]

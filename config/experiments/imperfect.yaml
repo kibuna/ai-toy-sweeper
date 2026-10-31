@@ -1,0 +1,12 @@
+# v21: 挟み損ね・観測の誤差・隠れを 2D の学習に入れる。値はすべて仮（実機で測って決め直す）
+sim:
+  sim2d:
+    grasp_fail:
+      enabled: true
+  real_world_effects:
+    obs_position_noise_m: 0.003   # ArUco と検出の誤差の見込み（Gazebo の検出は 2〜6 mm）
+    obs_yaw_noise_rad: 0.05
+task:
+  observation:
+    occlusion:
+      enabled: true

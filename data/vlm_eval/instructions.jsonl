@@ -1,0 +1,22 @@
+{"text": "赤いレゴを右上のエリアに片付けて", "expect": {"target_classes": ["lego"], "target_colors": ["red"], "excluded_classes": [], "destination": "top_right", "needs_confirmation": false}}
+{"text": "ミニカーを左下に集めて。レゴはそのままにして", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": ["lego"], "destination": "bottom_left", "needs_confirmation": false}}
+{"text": "青いブロックを全部左上のエリアへ", "expect": {"target_classes": ["lego"], "target_colors": ["blue"], "excluded_classes": [], "destination": "top_left", "needs_confirmation": false}}
+{"text": "黄色と緑のレゴを右下に運んで", "expect": {"target_classes": ["lego"], "target_colors": ["yellow", "green"], "excluded_classes": [], "destination": "bottom_right", "needs_confirmation": false}}
+{"text": "車のおもちゃを右上の隅に片付けてね", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": [], "destination": "top_right", "needs_confirmation": false}}
+{"text": "白いミニカーだけ左上に置いて", "expect": {"target_classes": ["toy_car"], "target_colors": ["white"], "excluded_classes": [], "destination": "top_left", "needs_confirmation": false}}
+{"text": "黒いレゴを左下のエリアへ", "expect": {"target_classes": ["lego"], "target_colors": ["black"], "excluded_classes": [], "destination": "bottom_left", "needs_confirmation": false}}
+{"text": "おもちゃを全部右下に片付けて", "expect": {"target_classes": ["lego", "toy_car"], "target_colors": [], "excluded_classes": [], "destination": "bottom_right", "needs_confirmation": false}}
+{"text": "Put the red LEGO bricks in the bottom right corner.", "expect": {"target_classes": ["lego"], "target_colors": ["red"], "excluded_classes": [], "destination": "bottom_right", "needs_confirmation": false}}
+{"text": "Move all toy cars to the top left corner and leave the LEGO alone.", "expect": {"target_classes": ["toy_car"], "target_colors": [], "excluded_classes": ["lego"], "destination": "top_left", "needs_confirmation": false}}
+{"text": "緑のブロックを右手前のエリアに", "expect": {"target_classes": ["lego"], "target_colors": ["green"], "excluded_classes": [], "destination": "bottom_right", "needs_confirmation": false}}
+{"text": "赤い車を左奥に持っていって", "expect": {"target_classes": ["toy_car"], "target_colors": ["red"], "excluded_classes": [], "destination": "top_left", "needs_confirmation": false}}
+{"text": "青いレゴと青いミニカーを右上へ", "expect": {"target_classes": ["lego", "toy_car"], "target_colors": ["blue"], "excluded_classes": [], "destination": "top_right", "needs_confirmation": false}}
+{"text": "レゴを片付けて", "expect": {"needs_confirmation": true}, "note": "行き先がない"}
+{"text": "ぬいぐるみを右上に片付けて", "expect": {"needs_confirmation": true}, "note": "対応外の物体"}
+{"text": "ピンクのレゴを左下へ", "expect": {"target_classes": ["lego"], "target_colors": ["pink"], "excluded_classes": [], "destination": "bottom_left", "needs_confirmation": false}, "note": "2026-10-18 からピンクも対応する色"}
+{"text": "紫のレゴを左下へ", "expect": {"needs_confirmation": true}, "note": "対応外の色"}
+{"text": "キッチンにミニカーを持っていって", "expect": {"needs_confirmation": true}, "note": "対応外の行き先"}
+{"text": "床を拭いて", "expect": {"needs_confirmation": true}, "note": "対応外の作業"}
+{"text": "なんか適当にやっといて", "expect": {"needs_confirmation": true}, "note": "曖昧"}
+{"text": "赤いレゴを右上に、青いレゴを左下に片付けて", "expect": {"needs_confirmation": true}, "note": "行き先が 2 つ（1 指示 1 行き先の形式外）"}
+{"text": "赤いレゴを右に片付けて", "expect": {"target_classes": ["lego"], "target_colors": ["red"], "excluded_classes": [], "destination": "right", "needs_confirmation": false}, "note": "2026-10-18 から「右」（右の辺の真ん中）も行き先。それまでは四隅のどれか分からないので確認"}

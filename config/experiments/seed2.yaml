@@ -1,0 +1,4 @@
+# 学習の乱数 Seed を変える（同じ設定での学習のばらつきを見る）
+rl:
+  training:
+    train_seed: 2

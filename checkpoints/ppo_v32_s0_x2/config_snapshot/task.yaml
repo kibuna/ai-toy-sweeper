@@ -1,0 +1,116 @@
+control:
+  action_duration_s: 0.125
+episode:
+  max_steps: 600
+  max_steps_per_extra_target: 300
+observation:
+  n_obstacle_slots: 6
+  n_target_slots: 4
+  held_lateral_tolerance_m: 0.012
+  edge_distance: corners
+  cleanup_primary: true
+  area_size: true
+  position_scale_m:
+  - 0.4
+  - 0.4
+  occlusion:
+    enabled: true
+    camera_xyz_m:
+    - 0.0
+    - -0.87
+    - 0.66
+    robot_height_m: 0.065
+    margin_m: 0.005
+    object_mid_height_m: 0.008
+    held_radius_m: 0.025
+success:
+  reach_tolerance_m: 0.03
+  require_cleanup: true
+sampling:
+  object_margin_m: 0.06
+  robot_margin_m: 0.11
+  stage1_front_gap_m:
+  - 0.03
+  - 0.08
+  stage1_yaw_noise_rad: 0.1
+  robot_object_distance_m:
+  - 0.12
+  - 0.3
+  stage2_max_offset_rad: 1.5707963267948966
+  stage5_edge_distance_m:
+  - 0.02
+  - 0.05
+  stage5_robot_distance_m:
+  - 0.12
+  - 0.25
+  stage5_yaw_noise_rad: 0.5
+  stage5_goal_max_angle_rad: 1.0471975511965976
+  clutter_range:
+  - 2
+  - 14
+  cluster_probability: 0.3
+  cluster_max_neighbors: 2
+  cluster_gap_m:
+  - 0.0
+  - 0.005
+  toy_car_probability: 0.3
+  multi_target_toy_car_probability: 0.5
+  target_group_probability: 0.0
+  target_group_gap_m:
+  - 0.01
+  - 0.03
+  work_area_size_range_m:
+  - - 0.6
+    - 1.0
+  - - 0.6
+    - 1.0
+  object_gap_m: 0.01
+  goal_mode: random
+  random_goal_size_m:
+  - 0.15
+  - 0.3
+  stage7_targets:
+  - 2
+  - 5
+  stage7_clutter:
+  - 2
+  - 10
+  stage8_zones:
+  - 1
+  - 3
+  stage8_zone_objects:
+  - 1
+  - 3
+  stage8_clutter:
+  - 2
+  - 13
+  stage9_mistake_probability: 0.5
+  stage9_all_delivered_probability: 0.5
+  # 2026-10-23 に書き足した: 学習したときにこの鍵は無かった（挟まった置き方 v35 は無い = 0）
+  stage9_wedged_probability: 0.0
+  stage9_home_out_m:
+  - 0.01
+  - 0.12
+  goal_clearance_m: 0.03
+  max_tries: 1000
+reward:
+  progress_per_m: 10.0
+  approach_per_m: 2.0
+  approach_offset_m: 0.04
+  success_bonus: 10.0
+  delivery_bonus: 3.0
+  foreign_in_goal_penalty: 3.0
+  failure_penalty: 20.0
+  non_target_per_m: 3.0
+  non_target_near_goal_per_m: 0.0
+  non_target_near_goal_band_m: 0.1
+  non_target_tolerance_m: 0.2
+  non_target_failure: false
+  chassis_contact_penalty: 0.3
+  redundant_gripper_penalty: 0.1
+  gripper_toggle_penalty: 0.05
+  time_penalty: 0.1
+  shaping_discount: 1.0
+  home_out_penalty: 3.0
+  cleanup_shaping: true
+  leftover_penalty: 0.0

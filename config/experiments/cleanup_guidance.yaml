@@ -1,0 +1,8 @@
+# v26: 後片付けへの手がかり。v24 で Stage 9 を練習しても、やり残しの
+# ある盤面をほぼ一度も直せなかった（全対象を入れた後は近づく項が 0、主対象は最後に運んだ対象のまま、置き場の位置が
+# 観測に無い）ため。係数は対象を運ぶときと同じ（未検証）
+task:
+  observation:
+    cleanup_primary: true
+  reward:
+    cleanup_shaping: true
